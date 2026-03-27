@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Do / Does / Did Practice</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f8f6ff;--surface:#f1eeff;--card:#ffffff;
+  --border:#e0d9f7;--border2:#c8bef0;
+  --ink:#1a1433;--ink2:#5a4e80;--muted:#a096c0;
+  --do:#6366f1;--do-bg:rgba(99,102,241,.1);
+  --does:#8b5cf6;--does-bg:rgba(139,92,246,.1);
+  --did:#ec4899;--did-bg:rgba(236,72,153,.1);
+  --green:#16a34a;--green-bg:rgba(22,163,74,.08);
+  --red:#dc2626;--red-bg:rgba(220,38,38,.07);
+  --gold:#d97706;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Nunito',sans-serif;min-height:100vh}
+.hdr{background:linear-gradient(135deg,#4f46e5,#7c3aed,#be185d);padding:20px 22px;display:flex;align-items:center;gap:14px;}
+.hdr-icon{font-size:2rem;flex-shrink:0}
+.hdr-text h1{font-size:1.2rem;font-weight:900;color:#fff;letter-spacing:-.02em}
+.hdr-text p{font-size:.75rem;color:rgba(255,255,255,.6);margin-top:2px}
+.hdr-score{margin-left:auto;text-align:right}
+.hdr-score-num{font-family:'DM Mono',monospace;font-size:2rem;font-weight:500;color:#fde68a;line-height:1}
+.hdr-score-lbl{font-size:.62rem;color:rgba(255,255,255,.45)}
+.tabs{background:#fff;border-bottom:2px solid var(--border);display:flex;overflow-x:auto;scrollbar-width:none;padding:0 14px;}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:12px 18px;cursor:pointer;white-space:nowrap;font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;background:none;border-top:none;border-left:none;border-right:none;font-family:'Nunito',sans-serif;}
+.tab:hover{color:var(--ink2)}
+.tab.do-active  {color:var(--do);border-bottom-color:var(--do)}
+.tab.does-active{color:var(--does);border-bottom-color:var(--does)}
+.tab.did-active {color:var(--did);border-bottom-color:var(--did)}
+.tab.all-active {color:#4f46e5;border-bottom-color:#4f46e5}
+.prog{height:4px;background:var(--border)}
+.prog-fill{height:100%;transition:width .4s ease;border-radius:0 2px 2px 0}
+.main{max-width:700px;margin:0 auto;padding:22px 13px 80px}
+.ref-table{background:var(--card);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:18px;}
+.ref-table table{width:100%;border-collapse:collapse;font-size:.8rem}
+.ref-table th{padding:10px 12px;background:var(--surface);font-weight:800;font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);border-bottom:1px solid var(--border);text-align:left;}
+.ref-table td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--ink2);vertical-align:top}
+.ref-table tr:last-child td{border-bottom:none}
+.ref-table td:first-child{font-weight:800;color:var(--ink)}
+.ref-table td code{background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:2px 7px;font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink);}
+.stats{display:flex;gap:8px;margin-bottom:18px}
+.stat{flex:1;background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:10px 12px;text-align:center}
+.stat-val{font-family:'DM Mono',monospace;font-size:1.4rem;font-weight:500;line-height:1}
+.stat-lbl{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+.qcard{background:var(--card);border:2px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:14px;transition:border-color .25s,box-shadow .25s;}
+.qcard.ok  {border-color:var(--green);box-shadow:0 2px 12px rgba(22,163,74,.12)}
+.qcard.fail{border-color:var(--red);box-shadow:0 2px 12px rgba(220,38,38,.1)}
+.qcard-top{padding:15px 18px 12px;border-bottom:1px solid var(--border)}
+.qmeta{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.qn{width:28px;height:28px;border-radius:8px;flex-shrink:0;background:var(--surface);border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink2);font-weight:500;}
+.qcard.ok   .qn{background:var(--green);color:#fff;border-color:var(--green)}
+.qcard.fail .qn{background:var(--red);color:#fff;border-color:var(--red)}
+.qtag{font-size:.62rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;padding:3px 9px;border-radius:20px;}
+.tag-do  {background:var(--do-bg);color:var(--do)}
+.tag-does{background:var(--does-bg);color:var(--does)}
+.tag-did {background:var(--did-bg);color:var(--did)}
+.tag-neg {background:rgba(220,38,38,.1);color:var(--red)}
+.tag-q   {background:rgba(22,163,74,.1);color:var(--green)}
+.tag-err {background:rgba(217,119,6,.1);color:var(--gold)}
+.tag-mix {background:rgba(79,70,229,.1);color:#4f46e5}
+.qtype-lbl{font-size:.65rem;font-weight:700;color:var(--muted);margin-left:auto;font-family:'DM Mono',monospace}
+.qinstruction{font-size:.77rem;color:var(--ink2);margin-bottom:8px;line-height:1.5}
+.qsentence{background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:12px 15px;font-size:.95rem;line-height:1.7;color:var(--ink);font-weight:600;}
+.qsentence .gap{display:inline-block;min-width:72px;border-bottom:2.5px solid var(--muted);text-align:center;color:var(--muted);font-style:italic;font-weight:400;margin:0 4px;font-size:.88rem;}
+.qsentence .err-word{background:rgba(220,38,38,.12);border-bottom:2px solid var(--red);padding:1px 5px;border-radius:4px;color:var(--red);font-weight:700;}
+.signal-badge{display:inline-flex;align-items:center;gap:5px;margin-top:7px;font-size:.68rem;color:var(--muted);background:rgba(255,255,255,.7);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-family:'DM Mono',monospace;}
+.mc-wrap{display:flex;flex-direction:column;gap:7px;padding:13px 16px}
+.mco{display:flex;align-items:center;gap:9px;background:var(--surface);border:2px solid var(--border);border-radius:10px;padding:10px 14px;cursor:pointer;font-size:.88rem;font-weight:600;color:var(--ink);transition:all .15s;user-select:none;}
+.mco:hover:not(.dis){border-color:#6366f1;background:#eff0ff}
+.mco.sel{border-color:#6366f1;background:#eff0ff}
+.mco.ok {border-color:var(--green);background:var(--green-bg);color:var(--green)}
+.mco.bad{border-color:var(--red);background:var(--red-bg);color:var(--red)}
+.mco.dis{cursor:default}
+.mco-l{width:26px;height:26px;flex-shrink:0;border-radius:7px;border:2px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:.7rem;font-weight:700;}
+.mco.ok  .mco-l{background:var(--green);color:#fff;border-color:var(--green)}
+.mco.bad .mco-l{background:var(--red);color:#fff;border-color:var(--red)}
+.mco.sel .mco-l{background:#6366f1;color:#fff;border-color:#6366f1}
+.write-wrap{padding:13px 16px}
+.write-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.write-in{background:var(--surface);border:2px solid var(--border);border-radius:10px;padding:9px 14px;color:var(--ink);font-family:'DM Mono',monospace;font-size:.9rem;font-weight:500;flex:1;min-width:160px;outline:none;transition:border-color .2s;}
+.write-in:focus{border-color:#6366f1}
+.write-in.ok  {border-color:var(--green);background:var(--green-bg);color:var(--green)}
+.write-in.fail{border-color:var(--red);background:var(--red-bg)}
+.write-in:disabled{opacity:.85}
+.check-btn{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:10px;padding:9px 20px;font-family:'Nunito',sans-serif;font-size:.84rem;font-weight:800;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.check-btn:hover{opacity:.88}
+.check-btn:disabled{background:var(--border);color:var(--muted);cursor:default}
+.fb{margin:0 16px 14px;padding:12px 14px;border-radius:10px;font-size:.8rem;line-height:1.65;display:none}
+.fb.show{display:block}
+.fb.ok  {background:var(--green-bg);border:1px solid rgba(22,163,74,.25);color:#14532d}
+.fb.fail{background:var(--red-bg);border:1px solid rgba(220,38,38,.2);color:#7f1d1d}
+.fb .cor{margin-top:8px;padding:8px 12px;background:rgba(22,163,74,.12);border-radius:8px;font-family:'DM Mono',monospace;font-size:.82rem;color:#14532d;font-weight:500;}
+.fb .rule-note{margin-top:7px;padding:8px 12px;background:rgba(255,255,255,.7);border:1px solid var(--border);border-radius:8px;font-size:.78rem;color:var(--ink2);}
+.fb .rule-note strong{color:var(--ink)}
+.complete{background:var(--card);border:2px solid var(--border);border-radius:20px;padding:36px 24px;text-align:center;display:none;}
+.complete.show{display:block}
+.comp-emoji{font-size:3.5rem;margin-bottom:10px}
+.comp-score{font-family:'DM Mono',monospace;font-size:3.5rem;font-weight:500;line-height:1;background:linear-gradient(135deg,#6366f1,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.comp-lbl{font-size:.8rem;color:var(--muted);margin-bottom:14px}
+.comp-grade{font-size:1rem;font-weight:800;margin-bottom:16px;color:var(--ink)}
+.comp-chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+.cc{padding:7px 14px;border-radius:20px;font-size:.75rem;font-weight:800}
+.cc-ok  {background:var(--green-bg);color:var(--green)}
+.cc-fail{background:var(--red-bg);color:var(--red)}
+.cc-pts {background:rgba(217,119,6,.1);color:var(--gold)}
+.comp-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.cbtn{padding:10px 22px;border-radius:10px;border:none;font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:800;cursor:pointer;transition:all .2s}
+.cbtn-primary{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff}
+.cbtn-primary:hover{opacity:.85}
+.cbtn-sec{background:var(--surface);border:2px solid var(--border);color:var(--ink2)}
+.cbtn-sec:hover{border-color:#6366f1;color:#6366f1}
+@keyframes popUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.qcard{animation:popUp .28s ease both}
+.qcard:nth-child(2){animation-delay:.04s}.qcard:nth-child(3){animation-delay:.08s}
+.qcard:nth-child(4){animation-delay:.12s}.qcard:nth-child(5){animation-delay:.16s}
+.qcard:nth-child(6){animation-delay:.20s}.qcard:nth-child(7){animation-delay:.24s}
+.qcard:nth-child(8){animation-delay:.28s}.qcard:nth-child(9){animation-delay:.32s}
+.qcard:nth-child(10){animation-delay:.36s}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="hdr-icon">⚡</div>
+  <div class="hdr-text"><h1>Do / Does / Did</h1><p>Selección · Writing · Corrección de errores</p></div>
+  <div class="hdr-score"><div class="hdr-score-num" id="g-pts">0</div><div class="hdr-score-lbl">puntos</div></div>
+</div>
+<div class="tabs" id="tabs"></div>
+<div class="prog"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+<div class="main" id="main"></div>
+<script>
+var SECTIONS=[
+{id:'do',label:'DO',color:'var(--do)',progColor:'#6366f1',tabClass:'do-active',
+qs:[
+  {type:'mc',tag:'tag-do',tagLabel:'DO',qtype:'Afirmativo',instruction:'Choose the correct auxiliary:',sentence:'_____ you like spicy food?',signal:'You / question',opts:['Do','Does','Did','Are'],ans:0,corrected:'<strong>Do</strong> you like spicy food?',exp:'Use <strong>DO</strong> with: I · you · we · they — in present simple questions.',rule:'<strong>DO</strong> → I / you / we / they + base verb'},
+  {type:'mc',tag:'tag-neg',tagLabel:'Negativo',qtype:'Negación',instruction:'Choose the correct negative form:',sentence:'We _____ agree with that decision.',signal:'We / negative',opts:["don't","doesn't","didn't","aren't"],ans:0,corrected:"We <strong>don't</strong> agree with that decision.",exp:"Negative with we/they/I/you: <strong>don't</strong> (do not) + base verb.",rule:"don't = do not → I / you / we / they"},
+  {type:'write',tag:'tag-do',tagLabel:'DO',qtype:'Escribir',instruction:"Complete with DO or DON'T:",sentence:'_____ they speak Portuguese?',hint:'they → question',answers:['Do'],corrected:'<strong>Do</strong> they speak Portuguese?',exp:'Questions with they → <strong>Do</strong> + they + base verb.',rule:'Do + I/you/we/they + base verb?'},
+  {type:'mc',tag:'tag-neg',tagLabel:'Negativo',qtype:'Negación',instruction:'Choose the correct negative:',sentence:'I _____ understand this grammar rule yet.',signal:'I / negative',opts:["don't","doesn't","didn't","haven't"],ans:0,corrected:"I <strong>don't</strong> understand this rule yet.",exp:'Negative with I → <strong>don\'t</strong> + base verb.',rule:"don't + base verb → I / you / we / they"},
+  {type:'write',tag:'tag-neg',tagLabel:'Negativo',qtype:'Escribir',instruction:'Write the negative contraction:',sentence:'They _____ (not / want) to leave yet.',hint:"don't / do not",answers:["don't want","do not want"],corrected:"They <strong>don't want</strong> to leave yet.",exp:"Negative: don't + base verb. 'Want' stays in base form.",rule:"don't + base verb (never don't + verb-s)"},
+  {type:'mc',tag:'tag-err',tagLabel:'Error',qtype:'Error',instruction:'Which sentence is INCORRECT?',sentence:'Find the error:',signal:'error detection',opts:["Do you know her?","I don't like coffee.","We do goes to school.","They don't have a car."],ans:2,corrected:'"We <strong>go</strong> to school." or "We <strong>do go</strong> (emphatic)"',exp:'"Do goes" is wrong. After DO, always use the BASE verb: do go, do have, do like — NEVER do + verb-s.',rule:'DO + base verb (never do + verb-s/ed)'},
+  {type:'mc',tag:'tag-q',tagLabel:'Pregunta',qtype:'Pregunta',instruction:'Choose the correct question:',sentence:'You want to ask your friend about his studies.',signal:'friend = you',opts:["Do you study every day?","Does you study every day?","Did you study every day?","Are you study every day?"],ans:0,corrected:'<strong>Do you study</strong> every day?',exp:'Question with you (present) → <strong>Do</strong> + you + base verb?',rule:'Do + I/you/we/they + base verb?'},
+  {type:'write',tag:'tag-do',tagLabel:'DO',qtype:'Escribir',instruction:'Complete the short answer:',sentence:'"Do you like English?" — "Yes, I _____ ."',hint:'short answer with DO',answers:['do'],corrected:'"Yes, I <strong>do</strong>."',exp:"Short answers with DO: Yes, I do. / No, I don't.",rule:'Short answers: Yes, I/you/we/they + do.'},
+  {type:'mc',tag:'tag-do',tagLabel:'DO',qtype:'Énfasis',instruction:'Choose the emphatic/stress form:',sentence:'"You never listen!" — "That\'s not true! I _____ listen!"',signal:'emphatic / stress',opts:['do','does','did','am'],ans:0,corrected:'I <strong>do</strong> listen!',exp:'DO can be used for emphasis in affirmative sentences: "I DO like it!"',rule:'DO / DOES / DID for emphasis in affirmatives'},
+  {type:'write',tag:'tag-neg',tagLabel:'Negativo',qtype:'Escribir',instruction:'Rewrite as a negative sentence:',sentence:'We have a car. → We _____ a car.',hint:"don't have",answers:["don't have","do not have"],corrected:"We <strong>don't have</strong> a car.",exp:"Negative: don't + base verb. 'Have' stays in base form.",rule:"we/they/I/you + don't + base verb"}
+]},
+{id:'does',label:'DOES',color:'var(--does)',progColor:'#8b5cf6',tabClass:'does-active',
+qs:[
+  {type:'mc',tag:'tag-does',tagLabel:'DOES',qtype:'Pregunta',instruction:'Choose the correct auxiliary:',sentence:'_____ she work on weekends?',signal:'she / question',opts:['Does','Do','Did','Is'],ans:0,corrected:'<strong>Does</strong> she work on weekends?',exp:'Use <strong>DOES</strong> with: he · she · it — in present simple questions.',rule:'DOES → he / she / it + base verb'},
+  {type:'write',tag:'tag-does',tagLabel:'DOES',qtype:'Escribir',instruction:"Complete with DOES or DOESN'T:",sentence:'_____ he play football?',hint:'he → question',answers:['Does'],corrected:'<strong>Does</strong> he play football?',exp:'Questions with he/she/it → <strong>Does</strong> + base verb (NOT "Does he plays").',rule:'Does + he/she/it + base verb? (no -s on verb!)'},
+  {type:'mc',tag:'tag-neg',tagLabel:'Negativo',qtype:'Negación',instruction:'Choose the correct negative:',sentence:'He _____ eat breakfast in the morning.',signal:'he / negative',opts:["doesn't","don't","didn't","isn't"],ans:0,corrected:"He <strong>doesn't</strong> eat breakfast.",exp:"Negative with he/she/it: <strong>doesn't</strong> (does not) + base verb.",rule:"doesn't = does not → he / she / it"},
+  {type:'mc',tag:'tag-err',tagLabel:'Error',qtype:'Error',instruction:'Find the error:',sentence:'Which sentence is INCORRECT?',signal:'error detection',opts:["She doesn't like cold weather.","Does he work here?","He doesn't comes to class.","It doesn't matter."],ans:2,corrected:'"He <strong>doesn\'t come</strong> to class."',exp:"After doesn't → always BASE verb. NEVER doesn't + verb-s.",rule:"doesn't + BASE verb (not doesn't + verb-s)"},
+  {type:'write',tag:'tag-does',tagLabel:'DOES',qtype:'Escribir',instruction:'Write the question:',sentence:'_____ (your sister / like) action movies?',hint:'Does + your sister + like',answers:['Does your sister like'],corrected:'<strong>Does your sister like</strong> action movies?',exp:'Your sister = she → use DOES. Verb stays in base form: like (not likes).',rule:'Does + he/she/it + BASE verb?'},
+  {type:'mc',tag:'tag-does',tagLabel:'DOES',qtype:'Short Answer',instruction:'Choose the correct short answer:',sentence:'"Does Maria speak French?" — "No, she _____."',signal:'she / short answer',opts:["doesn't","don't","didn't","isn't"],ans:0,corrected:'"No, she <strong>doesn\'t</strong>."',exp:"Short answers with DOES: Yes, he/she/it does. / No, he/she/it doesn't.",rule:"Short answer → Yes, she does. / No, she doesn't."},
+  {type:'mc',tag:'tag-err',tagLabel:'Error',qtype:'Error',instruction:'Which is CORRECT?',sentence:'Choose the grammatically correct sentence:',signal:'he/she/it',opts:["Does she likes pizza?","Does she like pizza?","Do she likes pizza?","Do she like pizza?"],ans:1,corrected:'<strong>Does she like pizza?</strong>',exp:'DOES already marks 3rd person → verb has NO -s: Does she LIKE (not likes).',rule:'Does + he/she/it + BASE verb (no -s on verb)'},
+  {type:'write',tag:'tag-neg',tagLabel:'Negativo',qtype:'Escribir',instruction:'Rewrite as negative:',sentence:'She has a dog. → She _____ a dog.',hint:"doesn't have",answers:["doesn't have","does not have"],corrected:"She <strong>doesn't have</strong> a dog.",exp:"Negative 3rd person: doesn't + base verb. 'Have' stays as 'have' — not 'doesn't has'.",rule:"doesn't + base verb (not doesn't has/goes/works)"},
+  {type:'mc',tag:'tag-does',tagLabel:'DOES',qtype:'Pregunta',instruction:'Choose the correct question word order:',sentence:"You want to ask about your boss's schedule.",signal:'boss = he/she',opts:["Where does your boss work?","Where do your boss works?","Where your boss does work?","Where does your boss works?"],ans:0,corrected:'<strong>Where does your boss work?</strong>',exp:'Wh- question structure: <strong>Wh-word + does + subject + base verb?</strong>',rule:'Wh- + does + subject + BASE verb?'},
+  {type:'write',tag:'tag-does',tagLabel:'DOES',qtype:'Escribir',instruction:'Complete with the correct form:',sentence:'It _____ (not / snow) much in Costa Rica.',hint:"doesn't snow",answers:["doesn't snow","does not snow"],corrected:"It <strong>doesn't snow</strong> much in Costa Rica.",exp:"It = 3rd person → doesn't + base verb.",rule:"it/he/she + doesn't + BASE verb"}
+]},
+{id:'did',label:'DID',color:'var(--did)',progColor:'#ec4899',tabClass:'did-active',
+qs:[
+  {type:'mc',tag:'tag-did',tagLabel:'DID',qtype:'Pregunta',instruction:'Choose the correct auxiliary:',sentence:'_____ you call her last night?',signal:'last night / past question',opts:['Did','Do','Does','Were'],ans:0,corrected:'<strong>Did</strong> you call her last night?',exp:'DID = past auxiliary for ALL subjects. Use for Past Simple questions.',rule:'DID → ALL subjects → Past Simple questions'},
+  {type:'write',tag:'tag-did',tagLabel:'DID',qtype:'Escribir',instruction:'Write the past question:',sentence:'_____ (she / finish) her homework?',hint:'Did + she + finish (base verb)',answers:['Did she finish'],corrected:'<strong>Did she finish</strong> her homework?',exp:'Past question with she → DID + she + BASE verb. NOT "Did she finished."',rule:'Did + subject + BASE verb? (never past form!)'},
+  {type:'mc',tag:'tag-neg',tagLabel:'Negativo',qtype:'Negación',instruction:'Choose the correct negative:',sentence:'They _____ the meeting yesterday.',signal:'yesterday / negative',opts:["didn't attend","don't attend","doesn't attend","weren't attend"],ans:0,corrected:"They <strong>didn't attend</strong> the meeting yesterday.",exp:"Past negative for ALL subjects: <strong>didn't</strong> (did not) + BASE verb.",rule:"didn't = did not → ALL subjects + BASE verb"},
+  {type:'mc',tag:'tag-err',tagLabel:'Error',qtype:'Error',instruction:'Find the error:',sentence:'Which sentence is INCORRECT?',signal:'past / error detection',opts:["Did you see the game?","She didn't go to school.","He didn't ate breakfast.","We didn't understand."],ans:2,corrected:'"He <strong>didn\'t eat</strong> breakfast."',exp:"After didn't → ALWAYS base verb. NEVER didn't + past form.",rule:"didn't + BASE verb (never didn't + past form)"},
+  {type:'write',tag:'tag-did',tagLabel:'DID',qtype:'Escribir',instruction:'Write the negative contraction:',sentence:'I _____ (not / see) that movie.',hint:"didn't + see",answers:["didn't see","did not see"],corrected:"I <strong>didn't see</strong> that movie.",exp:"Negative past: didn't + base verb. 'See' stays as base form (not 'saw').",rule:"didn't + BASE verb (not didn't + saw/went/ate)"},
+  {type:'mc',tag:'tag-did',tagLabel:'DID',qtype:'Short Answer',instruction:'Choose the correct short answer:',sentence:'"Did you enjoy the concert?" — "Yes, I _____."',signal:'past / short answer',opts:['did','does','do','was'],ans:0,corrected:'"Yes, I <strong>did</strong>."',exp:"Short answers with DID: Yes, I/you/he/she/we/they did. / No, I/you/he/she/we/they didn't.",rule:"Short answer → Yes, I did. / No, I didn't."},
+  {type:'mc',tag:'tag-err',tagLabel:'Error',qtype:'Error',instruction:'Which is CORRECT?',sentence:'Choose the grammatically correct question:',signal:'past question',opts:["Did she went to the party?","Did she go to the party?","Does she went to the party?","Did she goes to the party?"],ans:1,corrected:'<strong>Did she go to the party?</strong>',exp:'DID already marks past tense → verb returns to BASE form: go (not went).',rule:'Did + subject + BASE verb? (go, not went)'},
+  {type:'write',tag:'tag-did',tagLabel:'DID',qtype:'Escribir',instruction:'Write the wh-question in past:',sentence:'_____ (where / they / go) on vacation?',hint:'Where + did + they + go',answers:['Where did they go'],corrected:'<strong>Where did they go</strong> on vacation?',exp:'Wh- past question: Where/What/Why + DID + subject + BASE verb?',rule:'Wh- + did + subject + BASE verb?'},
+  {type:'mc',tag:'tag-did',tagLabel:'DID',qtype:'Énfasis',instruction:'Choose the correct emphatic past form:',sentence:'"You didn\'t call me!" — "I _____ call you! Three times!"',signal:'emphatic / past',opts:['did','does','do','was'],ans:0,corrected:'I <strong>did</strong> call you!',exp:'DID for emphasis in past affirmatives: "I DID call." Stress falls on DID.',rule:'DID + base verb = emphatic past affirmative'},
+  {type:'write',tag:'tag-neg',tagLabel:'Negativo',qtype:'Escribir',instruction:'Rewrite as past negative:',sentence:'She understood the lesson. → She _____ the lesson.',hint:"didn't understand",answers:["didn't understand","did not understand"],corrected:"She <strong>didn't understand</strong> the lesson.",exp:"Past negative: didn't + BASE verb. 'Understand' returns to base form (not 'understood').",rule:"didn't + BASE verb (understand, not understood)"}
+]},
+{id:'mix',label:'MIX 🔀',color:'#4f46e5',progColor:'#4f46e5',tabClass:'all-active',
+qs:[
+  {type:'mc',tag:'tag-mix',tagLabel:'DO/DOES/DID',qtype:'Selección',instruction:'Choose the correct auxiliary:',sentence:'_____ your parents live in the same city as you?',signal:'your parents = they / present',opts:['Do','Does','Did','Are'],ans:0,corrected:'<strong>Do</strong> your parents live in the same city?',exp:'"Your parents" = they (plural) → DO. Present tense.',rule:'DO → I / you / we / they (present)'},
+  {type:'mc',tag:'tag-mix',tagLabel:'DO/DOES/DID',qtype:'Selección',instruction:'Choose the correct auxiliary:',sentence:'_____ your teacher explain things clearly?',signal:'your teacher = he/she / present',opts:['Does','Do','Did','Has'],ans:0,corrected:'<strong>Does</strong> your teacher explain things clearly?',exp:'"Your teacher" = he/she → DOES. Present. Base verb: explain (not explains).',rule:'DOES → he / she / it (present)'},
+  {type:'mc',tag:'tag-mix',tagLabel:'DO/DOES/DID',qtype:'Selección',instruction:'Choose the correct auxiliary:',sentence:'_____ you enjoy the party last Saturday?',signal:'last Saturday / past',opts:['Did','Do','Does','Were'],ans:0,corrected:'<strong>Did</strong> you enjoy the party?',exp:'"Last Saturday" = past → DID (works for ALL subjects).',rule:'DID → ALL subjects (past simple)'},
+  {type:'write',tag:'tag-mix',tagLabel:'MIX',qtype:'Escribir',instruction:'Fill in the blank with DO, DOES, or DID:',sentence:'_____ she call you this morning?',hint:'she / this morning = past',answers:['Did'],corrected:'<strong>Did</strong> she call you this morning?',exp:'"This morning" = past → DID. Even with she, we use DID (not does) for past questions.',rule:'Past question → DID (all subjects, including he/she/it)'},
+  {type:'mc',tag:'tag-err',tagLabel:'Error',qtype:'Error',instruction:'Find the sentence with an error:',sentence:'Which one is INCORRECT?',signal:'mix / error',opts:["Do they have a pool?","Does he works here?","Did you sleep well?","I don't know the answer."],ans:1,corrected:'"Does he <strong>work</strong> here?"',exp:'DOES + BASE verb. Never "does he works" — the -s disappears because DOES already signals 3rd person.',rule:'DOES + BASE verb (not verb-s)'},
+  {type:'write',tag:'tag-mix',tagLabel:'MIX',qtype:'Escribir',instruction:'Fill in: DO, DOES, or DID?',sentence:'They _____ (not / go) to school yesterday because it was a holiday.',hint:"didn't go",answers:["didn't go","did not go"],corrected:"They <strong>didn't go</strong> to school yesterday.",exp:'"Yesterday" = past negative → didn\'t + base verb.',rule:"Past negative → didn't + base verb (ALL subjects)"},
+  {type:'mc',tag:'tag-mix',tagLabel:'DO/DOES/DID',qtype:'Selección',instruction:'Choose ALL the correct sentences:',sentence:'Which sentence uses the auxiliary correctly?',signal:'comparative',opts:["What time does the store close?","What time do the store closes?","What time did the store closes yesterday?","What time does the store closed?"],ans:0,corrected:'<strong>What time does the store close?</strong>',exp:'"The store" = it → DOES. Base verb: close (no -s).',rule:'DOES + subject + BASE verb? (no -s on verb)'},
+  {type:'write',tag:'tag-mix',tagLabel:'MIX',qtype:'Escribir',instruction:'Complete with DO, DOES, or DID:',sentence:'"_____ you understand the difference between DO and DOES?"',hint:'you / present',answers:['Do'],corrected:'"<strong>Do</strong> you understand the difference?"',exp:'"You" = present → DO. Base verb: understand.',rule:'DO → I / you / we / they (present)'},
+  {type:'mc',tag:'tag-err',tagLabel:'Error',qtype:'Error',instruction:'Find ALL errors — choose the sentence with TWO errors:',sentence:'Which sentence has errors?',signal:'double error',opts:["Did she went to school yesterday?","Does he work on Saturdays?","Do you like coffee?","Did they call you?"],ans:0,corrected:'"Did she <strong>go</strong> to school yesterday?"',exp:'"Did she went" has two errors: 1) DID + BASE verb (not past form). 2) Never "did + went" — that\'s double past tense.',rule:"DID + BASE verb — NEVER DID + past form (went/ate/saw)"},
+  {type:'write',tag:'tag-mix',tagLabel:'MIX',qtype:'Escribir',instruction:'Write the correct question — choose DO, DOES or DID:',sentence:'Ask about her hobby: "_____ (what / she / do) in her free time?"',hint:'What + does + she + do',answers:['What does she do'],corrected:'<strong>What does she do</strong> in her free time?',exp:'"She" = 3rd person singular → DOES. "Do" at the end is the main verb.',rule:'DOES (auxiliary) + she + do (main verb, base form)'}
+]}
+];
+
+var cur=0,state={},pts=0;
+SECTIONS.forEach(function(s,si){state[si]={};s.qs.forEach(function(_,qi){state[si][qi]={answered:false,correct:false};});});
+
+var tabsEl=document.getElementById('tabs');
+SECTIONS.forEach(function(s,i){
+  var btn=document.createElement('button');
+  btn.className='tab'+(i===0?' '+s.tabClass:'');
+  btn.id='tab-'+i; btn.textContent=s.label;
+  btn.onclick=function(){switchSec(i);};
+  tabsEl.appendChild(btn);
+});
+
+function switchSec(i){
+  cur=i;
+  SECTIONS.forEach(function(_,j){ var t=document.getElementById('tab-'+j); if(t) t.className='tab'+(j===i?' '+SECTIONS[j].tabClass:''); });
+  render(); window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function render(){
+  var sec=SECTIONS[cur], s=state[cur];
+  var answered=Object.values(s).filter(function(x){return x.answered;}).length;
+  var correct=Object.values(s).filter(function(x){return x.correct;}).length;
+  var total=sec.qs.length;
+  var pf=document.getElementById('prog-fill');
+  pf.style.width=(answered/total*100)+'%'; pf.style.background=sec.progColor;
+  var main=document.getElementById('main'); main.innerHTML='';
+  var ref=document.createElement('div'); ref.className='ref-table';
+  ref.innerHTML='<table><thead><tr><th>Auxiliary</th><th>Subjects</th><th>Use</th><th>Example</th></tr></thead><tbody><tr><td style="color:var(--do)">DO</td><td>I · you · we · they</td><td>Present questions &amp; negatives</td><td><code>Do you like coffee?</code></td></tr><tr><td style="color:var(--does)">DOES</td><td>he · she · it</td><td>Present questions &amp; negatives</td><td><code>Does she work here?</code></td></tr><tr><td style="color:var(--did)">DID</td><td>ALL subjects</td><td>Past questions &amp; negatives</td><td><code>Did they call you?</code></td></tr></tbody></table>';
+  main.appendChild(ref);
+  var stats=document.createElement('div'); stats.className='stats';
+  var wrong=Object.values(s).filter(function(x){return x.answered&&!x.correct;}).length;
+  stats.innerHTML='<div class="stat"><div class="stat-val" style="color:var(--green)">'+correct+'</div><div class="stat-lbl">✅ Correctas</div></div><div class="stat"><div class="stat-val" style="color:var(--red)">'+wrong+'</div><div class="stat-lbl">❌ Incorrectas</div></div><div class="stat"><div class="stat-val" style="color:var(--gold)">'+(total-answered)+'</div><div class="stat-lbl">🃏 Quedan</div></div>';
+  main.appendChild(stats);
+  var comp=document.createElement('div'); comp.className='complete'+(answered===total?' show':''); comp.id='comp-box';
+  if(answered===total) fillComplete(comp,correct,total,sec);
+  main.appendChild(comp);
+  sec.qs.forEach(function(q,qi){main.appendChild(buildCard(q,qi,cur,sec));});
+}
+
+function fillComplete(el,correct,total,sec){
+  var pct=Math.round(correct/total*100);
+  var secIdx=SECTIONS.indexOf(sec);
+  el.innerHTML='<div class="comp-emoji">'+(pct>=90?'🏆':pct>=70?'🎉':pct>=50?'📖':'💪')+'</div>'+
+    '<div class="comp-score">'+correct+'/'+total+'</div>'+
+    '<div class="comp-lbl">correctas en '+sec.label+'</div>'+
+    '<div class="comp-grade">'+(pct>=90?'🔥 Perfect! You master DO/DOES/DID.':pct>=70?'👍 Great job! Almost there.':pct>=50?'📖 Good effort — review the rules.':'💪 Keep practicing — you got this!')+'</div>'+
+    '<div class="comp-chips"><div class="cc cc-ok">✅ '+correct+' correctas</div><div class="cc cc-fail">❌ '+(total-correct)+' incorrectas</div><div class="cc cc-pts">⭐ +'+(correct*10)+' pts</div></div>'+
+    '<div class="comp-btns"><button class="cbtn cbtn-primary" onclick="restart('+secIdx+')">↺ Repetir</button><button class="cbtn cbtn-sec" onclick="switchSec('+((secIdx+1)%SECTIONS.length)+')">→ Siguiente</button></div>';
+}
+
+function buildCard(q,qi,si,sec){
+  var s=state[si][qi];
+  var card=document.createElement('div');
+  card.className='qcard'+(s.answered?(s.correct?' ok':' fail'):''); card.id='qcard-'+si+'-'+qi;
+  var top=document.createElement('div'); top.className='qcard-top';
+  var sentHTML=q.sentence.includes('_____')?q.sentence.replace('_____','<span class="gap">_____</span>'):q.sentence;
+  top.innerHTML='<div class="qmeta"><div class="qn" id="qn-'+si+'-'+qi+'">'+(s.answered?(s.correct?'✓':'✗'):(qi+1))+'</div><span class="qtag '+q.tag+'">'+q.tagLabel+'</span><span class="qtype-lbl">'+q.qtype+'</span></div><div class="qinstruction">'+q.instruction+'</div><div class="qsentence">'+sentHTML+(q.signal?'<br><span class="signal-badge">🔑 '+q.signal+'</span>':'')+'</div>'+(q.hint?'<div style="margin-top:7px;font-size:.7rem;color:var(--muted);font-family:\'DM Mono\',monospace">💡 '+q.hint+'</div>':'');
+  card.appendChild(top);
+  if(q.type==='mc'){
+    var wrap=document.createElement('div'); wrap.className='mc-wrap';
+    var letters=['A','B','C','D'];
+    q.opts.forEach(function(opt,oi){
+      var div=document.createElement('div'); div.id='opt-'+si+'-'+qi+'-'+oi;
+      var cls='mco'+(s.answered?' dis':'')+(s.answered&&oi===q.ans?' ok':s.answered&&s.chosen===oi&&oi!==q.ans?' bad':'');
+      div.className=cls;
+      div.innerHTML='<span class="mco-l">'+letters[oi]+'</span>'+opt;
+      if(!s.answered) div.onclick=function(){pickMC(si,qi,oi);};
+      wrap.appendChild(div);
+    });
+    card.appendChild(wrap);
+  } else {
+    var wrap=document.createElement('div'); wrap.className='write-wrap';
+    wrap.innerHTML='<div class="write-row"><input class="write-in" id="wi-'+si+'-'+qi+'" placeholder="Type here..."'+(s.answered?' disabled':'')+' onkeydown="if(event.key===\'Enter\')checkWrite('+si+','+qi+')"><button class="check-btn" id="wb-'+si+'-'+qi+'" onclick="checkWrite('+si+','+qi+')"'+(s.answered?' disabled':'')+'>Check ✓</button></div>';
+    card.appendChild(wrap);
+    if(s.answered&&s.savedAnswer){setTimeout(function(){var wi=document.getElementById('wi-'+si+'-'+qi);if(wi){wi.value=s.savedAnswer;wi.className='write-in '+(s.correct?'ok':'fail');}},0);}
+  }
+  var fb=document.createElement('div'); fb.id='fb-'+si+'-'+qi;
+  fb.className='fb'+(s.answered?' show '+(s.correct?'ok':'fail'):'');
+  if(s.answered){fb.innerHTML=(s.correct?'✅ <strong>Correct!</strong>':'❌ <strong>Incorrect.</strong>')+' '+q.exp+'<div class="cor">✓ '+q.corrected+'</div><div class="rule-note"><strong>📐 Rule:</strong> '+q.rule+'</div>';}
+  card.appendChild(fb);
+  return card;
+}
+
+function pickMC(si,qi,oi){
+  if(state[si][qi].answered) return;
+  var q=SECTIONS[si].qs[qi], correct=oi===q.ans;
+  state[si][qi]={answered:true,correct:correct,chosen:oi};
+  q.opts.forEach(function(_,i){var el=document.getElementById('opt-'+si+'-'+qi+'-'+i);if(!el)return;el.classList.add('dis');el.onclick=null;if(i===q.ans)el.classList.add('ok');else if(i===oi&&!correct)el.classList.add('bad');});
+  applyResult(si,qi,correct,q);
+}
+
+function checkWrite(si,qi){
+  if(state[si][qi].answered) return;
+  var q=SECTIONS[si].qs[qi];
+  var inp=document.getElementById('wi-'+si+'-'+qi);
+  var btn=document.getElementById('wb-'+si+'-'+qi);
+  if(!inp) return;
+  var val=inp.value.trim().toLowerCase().replace(/\s+/g,' ');
+  var correct=q.answers.some(function(a){return a.toLowerCase().replace(/\s+/g,' ')===val;});
+  state[si][qi]={answered:true,correct:correct,savedAnswer:inp.value};
+  inp.disabled=true; if(btn) btn.disabled=true;
+  inp.className='write-in '+(correct?'ok':'fail');
+  applyResult(si,qi,correct,q);
+}
+
+function applyResult(si,qi,correct,q){
+  var card=document.getElementById('qcard-'+si+'-'+qi);
+  var num=document.getElementById('qn-'+si+'-'+qi);
+  var fb=document.getElementById('fb-'+si+'-'+qi);
+  if(card) card.classList.add(correct?'ok':'fail');
+  if(num)  num.textContent=correct?'✓':'✗';
+  if(fb){fb.innerHTML=(correct?'✅ <strong>Correct!</strong>':'❌ <strong>Incorrect.</strong>')+' '+q.exp+'<div class="cor">✓ '+q.corrected+'</div><div class="rule-note"><strong>📐 Rule:</strong> '+q.rule+'</div>';fb.className='fb show '+(correct?'ok':'fail');}
+  if(correct){pts+=10;document.getElementById('g-pts').textContent=pts;}
+  var s=state[si],sec=SECTIONS[si];
+  var answered=Object.values(s).filter(function(x){return x.answered;}).length;
+  var corr=Object.values(s).filter(function(x){return x.correct;}).length;
+  var wrong=Object.values(s).filter(function(x){return x.answered&&!x.correct;}).length;
+  var statsVals=document.querySelectorAll('.stat-val');
+  if(statsVals[0]) statsVals[0].textContent=corr;
+  if(statsVals[1]) statsVals[1].textContent=wrong;
+  if(statsVals[2]) statsVals[2].textContent=sec.qs.length-answered;
+  var pf=document.getElementById('prog-fill'); if(pf) pf.style.width=(answered/sec.qs.length*100)+'%';
+  if(answered===sec.qs.length) setTimeout(function(){showComplete(si);},500);
+}
+
+function showComplete(si){
+  var sec=SECTIONS[si],s=state[si],total=sec.qs.length;
+  var correct=Object.values(s).filter(function(x){return x.correct;}).length;
+  var comp=document.getElementById('comp-box'); if(!comp) return;
+  fillComplete(comp,correct,total,sec); comp.classList.add('show');
+  comp.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function restart(si){
+  Object.values(state[si]).forEach(function(s){if(s.correct) pts-=10;});
+  pts=Math.max(0,pts); document.getElementById('g-pts').textContent=pts;
+  state[si]={}; SECTIONS[si].qs.forEach(function(_,qi){state[si][qi]={answered:false,correct:false};});
+  render(); window.scrollTo({top:0,behavior:'smooth'});
+}
+
+render();
+</script>
+</body>
+</html>
